@@ -1,0 +1,33 @@
+body {
+  padding: 20px;
+}
+.table {
+  border-collapse: collapse;
+  border: 3px solid grey;
+  width: 100%;
+}
+
+.table th, .table td {
+  border: 1px solid grey;
+  padding: 10px;
+  min-width: 75px;
+}
+
+.table thead {
+  background-color: rgb(221, 221, 221);
+}
+
+.search-panel {
+  display: flex;
+  justify-content: space-between;
+  padding: 5px 10px;
+}
+
+.statusEdit {
+  outline: #ee5858 solid 2px;
+  outline-offset: 1px;
+}
+
+.finishEdit {
+  margin-left: 10px;
+}
