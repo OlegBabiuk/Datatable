@@ -1,3 +1,4 @@
+/* eslint-disable indent */
 import PhoneService from './phone-service.js';
 
 class Datatable {
@@ -25,10 +26,10 @@ class Datatable {
   }
 
   _routerFunction(event) {
-    let target = event.target;
+    const { target } = event;
 
     if (target.closest('[data-sortable]')) {
-      let parentCell = target.closest('[data-sortable]');
+      const parentCell = target.closest('[data-sortable]');
       this.sotrColumn(parentCell.dataset.sortable);
     }
 
@@ -58,15 +59,10 @@ class Datatable {
 
   sotrColumn(type) {
     if (this.sortFlag) {
-      this.items = this.items.sort((item1, item2) => {
-        return item1[type] < item2[type] ? 1 : -1;
-      });
+      this.items = this.items.sort((item1, item2) => (item1[type] < item2[type] ? 1 : -1));
       this.sortFlag = false;
-
     } else {
-      this.items = this.items.sort((item1, item2) => {
-        return item1[type] > item2[type] ? 1 : -1;
-      });
+      this.items = this.items.sort((item1, item2) => (item1[type] > item2[type] ? 1 : -1));
       this.sortFlag = true;
     }
 
@@ -75,51 +71,54 @@ class Datatable {
 
   _selectSearchFields() {
     Object.keys(this.columnConfig)
-      .forEach(key => {
+      .forEach((key) => {
         if (this.columnConfig[key].isSearchable) {
           this.searchFields.push(key);
         }
-      })
+      });
   }
 
   getSelected() {
-    let checkboxs = this._findElements('[data-checkbox="common"]');
-    let selected = [...checkboxs]
+    const checkboxs = this._findElements('[data-checkbox="common"]');
+    const selected = [...checkboxs]
       .filter(item => item.checked)
-      .map(item => {
-        let key = item.dataset.element;
+      .map((item) => {
+        const key = item.dataset.element;
 
         return this.items.find(phone => phone.name === key);
       });
 
-    console.log(selected)
+    console.log(selected);
   }
 
   search() {
-    let searchText = this.input.value.toLowerCase();
+    const searchText = this.input.value.toLowerCase();
 
     this.items = this.originalItems;
     this.items = this.items
-      .filter(phone => {
-        let resalt = [];
+      .filter((phone) => {
+        const resalt = [];
         for (let i = 0; i < this.searchFields.length; i++) {
-          let key = this.searchFields[i];
+          const key = this.searchFields[i];
           resalt.push(phone[key].toLowerCase().includes(searchText));
         }
         return resalt.some(flag => flag === true);
-      })
+      });
 
     this._updateTbody();
   }
 
   selected(event) {
     const statusMainCheckbox = event.target.checked;
-    let checkboxs = this._findElements('[data-checkbox="common"]');
-    [...checkboxs].forEach(item => item.checked = statusMainCheckbox);
+    const checkboxs = this._findElements('[data-checkbox="common"]');
+    [...checkboxs].forEach((item) => {
+      // eslint-disable-next-line no-param-reassign
+      item.checked = statusMainCheckbox;
+    });
   }
 
   _editData(event) {
-    let target = event.target;
+    const { target } = event;
     if (target.dataset.etitable === 'true') {
       if (target.contentEditable === 'true') {
         return;
@@ -131,7 +130,7 @@ class Datatable {
         .closest('[data-element]')
         .insertAdjacentHTML(
           'beforeend',
-          `<i data-etitable="false" class="finishEdit fas fa-times"></i>`
+          '<i data-etitable="false" class="finishEdit fas fa-times"></i>',
         );
       target.addEventListener('blur', this._finishEdit);
       target.addEventListener('keydown', this._finishEdit);
@@ -139,9 +138,9 @@ class Datatable {
   }
 
   _finishEdit(event) {
-    if (event.key === "Enter" || event.type === "blur") {
+    if (event.key === 'Enter' || event.type === 'blur') {
       event.preventDefault();
-      let target = event.target;
+      const { target } = event;
 
       if (target.nextElementSibling) {
         target.nextElementSibling.remove();
@@ -150,11 +149,11 @@ class Datatable {
       target.classList.remove('statusEdit');
       target.contentEditable = false;
 
-      let itemKey = target
+      const itemKey = target
         .closest('[data-element]')
         .dataset
         .element;
-      let currentItem = this.items
+      const currentItem = this.items
         .find(phone => phone[itemKey] === this.saveEditData);
 
       if (currentItem) {
@@ -164,7 +163,7 @@ class Datatable {
   }
 
   cancelEdit(event) {
-    let span = event.target.previousElementSibling;
+    const span = event.target.previousElementSibling;
     span.classList.remove('statusEdit');
     span.contentEditable = false;
     event.target.remove();
@@ -174,8 +173,7 @@ class Datatable {
   _toFormTheadRow() {
     return (
       Object.entries(this.columnConfig)
-      .map(([key, value]) => {
-        return `
+        .map(([key, value]) => `
           <th
             ${(value.isSortable)
               ? `data-sortable="${key}"`
@@ -193,9 +191,7 @@ class Datatable {
                 : ''
               }
             </span>
-          </th>`;
-
-      }).join('')
+          </th>`).join('')
     );
   }
 
@@ -203,7 +199,7 @@ class Datatable {
     return `
       <tr data-element="row">
         ${ Object.keys(this.columnConfig)
-            .map(key => `
+          .map(key => `
               <td
                 data-element="${ key}"
               >
@@ -211,8 +207,7 @@ class Datatable {
                   ${phone[key]}
                 </span>
               </td>`)
-            .join('')
-        }
+        .join('')}
         <td>
           <input
             data-checkbox="common"
@@ -277,16 +272,17 @@ class Datatable {
 
 
 const initDatatable = async () => {
-  let phones = await PhoneService.getData();
+  const phones = await PhoneService.getData();
 
+  // eslint-disable-next-line no-unused-vars
   const datatable = new Datatable({
     element: document.querySelector('.datatable'),
     items: phones,
 
     columnConfig: {
       name: {
-        title: 'Название', // в таблице колонка будет так называться 
-        isSortable: true, // Поиск будет проверять эту и последнюю колонки 
+        title: 'Название', // в таблице колонка будет так называться
+        isSortable: true, // Поиск будет проверять эту и последнюю колонки
         isSearchable: true,
       },
       age: {
@@ -296,8 +292,8 @@ const initDatatable = async () => {
       snippet: { // Только для тех ключей которые есть в columnConfig будут колонки в таблице
         title: 'Описание',
         isSearchable: true, // В этой колонке тоже будет происходить поиск query
-      }
-    }
+      },
+    },
   });
 };
 
